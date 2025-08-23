@@ -13,6 +13,16 @@ export function SkinTypeSelector({
 }: SkinTypeSelectorProps) {
   const safeTime = safeExposureTime[`st${skinType}`];
 
+  const convertMinstoHrsMins = (safeTime: number) => {
+    if (safeTime < 60) {
+      return `${safeTime}m`;
+    }
+    const h = Math.floor(safeTime / 60);
+    const m = safeTime % 60;
+
+    return m === 0 ? `${h}h` : `${h}h ${m}m`;
+  };
+
   return (
     <div className='space-y-2 w-full max-w-md my-2'>
       <label className='font-semibold'>Select your skin type:</label>
@@ -29,7 +39,9 @@ export function SkinTypeSelector({
         <option value={6}>Skin Type 6 (Dark brown, never burns)</option>
       </select>
 
-      <p>Safe exposure time: {safeTime ? `${safeTime} minutes` : 'N/A'}</p>
+      <p>
+        Safe exposure time: {safeTime ? convertMinstoHrsMins(safeTime) : 'N/A'}
+      </p>
     </div>
   );
 }
