@@ -1,12 +1,10 @@
 'use client';
 import { useState } from 'react';
-// FIXME: uv decimal rounding/ truncation??
-//TODO: add safe exposure time
 
-import { UVData } from '../types';
+import { UVData, SkinType } from '../types';
 import { SkinTypeSelector } from './SkinTypeSelector';
 
-export default function UVDisplay({ uv, uv_max }: UVData) {
+export default function UVDisplay({ uv, uv_max, safe_exposure_time }: UVData) {
   const [skinType, setSkinType] = useState<SkinType>(3);
 
   function getUVLevel(uv: number) {
@@ -50,15 +48,19 @@ export default function UVDisplay({ uv, uv_max }: UVData) {
 
   return (
     <div
-      className={`flex flex-col items-center p-4 gap-2 rounded-xl shadow-md ${bg}`}
+      className={`flex flex-col items-center p-4 gap-3 rounded-xl shadow-md ${bg}`}
     >
       <p className='item'>uv index</p>
-      <h1 className={`text-5xl font-extrabold ${text}`}>{uv}</h1>
+      <h1 className={`text-5xl font-extrabold ${text}`}>{uv.toFixed(1)}</h1>
       <h2 className='text-2xl font-semibold'>{label}</h2>
       <h3 className='text-sm'>{message}</h3>
-      <p>Max UV Today: {uv_max}</p>
+      <p className='text-lg font-semibold'>Max UV Today: {uv_max.toFixed(1)}</p>
 
-      <SkinTypeSelector skinType={skinType} setSkinType={setSkinType} />
+      <SkinTypeSelector
+        skinType={skinType}
+        setSkinType={setSkinType}
+        safeExposureTime={safe_exposure_time}
+      />
     </div>
   );
 }
