@@ -55,7 +55,11 @@ export default function HomePage() {
           Loading...
         </div>
       ) : data ? (
-        <UVDisplay uv={data?.uv.result?.uv} uv_max={data?.uv.result.uv_max} />
+        <UVDisplay
+          uv={data?.uv.result?.uv}
+          uv_max={data?.uv.result.uv_max}
+          safe_exposure_time={data?.uv.result.safe_exposure_time}
+        />
       ) : (
         <div className='p-4 rounded-xl shadow-md bg-gray-200 text-gray-500 text-center'>
           Search for a city
