@@ -2,14 +2,14 @@
 
 type SearchProps = {
   placeholder: string;
-  city: string;
+  searchInput: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
 export default function SearchBar({
   placeholder,
-  city,
+  searchInput,
   onChange,
   onSubmit,
 }: SearchProps) {
@@ -18,7 +18,7 @@ export default function SearchBar({
       <form className='flex gap-2 w-full max-w-md' onSubmit={onSubmit}>
         <input
           type='text'
-          value={city}
+          value={searchInput}
           onChange={onChange}
           placeholder={placeholder}
           className='flex-1 px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400'
