@@ -54,7 +54,11 @@ export default function HomePage() {
         }
         const uvData = await res.json();
         setData(uvData);
-        console.log({ uvData });
+
+        if (uvData.uv.error) {
+          setError(uvData.uv.error);
+        }
+        // console.log({ uvData });
       } catch (e) {
         if (e instanceof Error) setError(e.message);
       } finally {
@@ -82,7 +86,6 @@ export default function HomePage() {
         throw new Error(error.error || 'Failed to fetch UV data');
       }
       const data = await res.json();
-      console.log(data);
       setData(data);
     } catch (e) {
       if (e instanceof Error) {
@@ -92,6 +95,8 @@ export default function HomePage() {
       setLoading(false);
     }
   };
+
+  // console.log(error || (data && data.uv.error));
 
   return (
     <>
@@ -133,13 +138,15 @@ export default function HomePage() {
             <p className='text-center text-gray-500'>Loading uv data...</p>
           ) : error ? (
             <p className='text-center text-gray-500'>{error}</p>
-          ) : data ? (
-            <UVDisplay
-              uv={data.uv.result.uv}
-              uv_max={data.uv.result.uv_max}
-              safe_exposure_time={data.uv.result.safe_exposure_time}
-            />
-          ) : null}
+          ) : (
+            data && (
+              <UVDisplay
+                uv={data.uv.result.uv}
+                uv_max={data.uv.result.uv_max}
+                safe_exposure_time={data.uv.result.safe_exposure_time}
+              />
+            )
+          )}
         </section>
       </main>
     </>
