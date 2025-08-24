@@ -1,15 +1,1 @@
 @import 'tailwindcss';
-
-/* TODO: ADD DARK MODE */
-
-@theme {
-  --color-hero: #fbad02; /* yellow - title box*/
-  --color-calculator: #ffd8b8; /* orange -uv/skin form */
-  --color-times: #c4b2e8; /* blue best tanning time */
-  --color-safety: #c5d58d; /* green */
-  --color-bg: #fbfaf3; /* off white */
-  --color-content: #191608; /* brown */
-  --color-danger: #ca020b; /* red */
-  --font-heading: 'Poppins', sans-serif;
-  --font-body: 'IBM Plex Mono', monospace;
-}
