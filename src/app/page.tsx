@@ -5,6 +5,7 @@ import SearchBar from './components/SearchBar';
 import UVDisplay from './components/UVDisplay';
 
 import { APIResponse } from './types';
+import { WeatherDisplay } from './components/WeatherDisplay';
 
 export default function HomePage() {
   const [city, setCity] = useState('');
@@ -26,11 +27,10 @@ export default function HomePage() {
         );
         const data = await res.json();
 
-        console.log({ data });
+        // console.log({ data });
 
         const cityName = data[0].name;
         setCity(cityName);
-        setError('Could not find city from your location');
       } catch (err) {
         console.error(err);
         setError('Failed to get city from coordinates');
@@ -94,40 +94,54 @@ export default function HomePage() {
   };
 
   return (
-    <main className='p-6'>
-      <div>sunbuddy</div>
+    <>
       <SearchBar
         placeholder='Enter city...'
         searchInput={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
         onSubmit={handleSearch}
       />
+      {/* bento grid container */}
+      <main className='grid grid-cols-1 gap-2 md:grid-cols-3 md:grid-rows-2 md:gap-4'>
+        {/* header- top left */}
+        <section className='bg-amber-200 border-2 flex flex-col gap-2 justify-center items-center md:col-span-1 md:row-span-1 rounded-2xl p-6'>
+          <h1 className='text-4xl font-semibold'>Sunbuddy </h1>
+          <p className='font-medium text-center'>
+            your sunny sidekick for safe sun time
+          </p>
+        </section>
 
-      {loading ? (
-        <div className='p-4 rounded-xl shadow-md bg-gray-200 text-gray-500 text-center'>
-          Loading...
-        </div>
-      ) : error ? (
-        <div className='p-4 rounded-xl shadow-md bg-red-100 text-red-600 text-center'>
-          {error}
-        </div>
-      ) : data ? (
-        <div>
-          <div>
-            <div>{city}</div>
-            <div>{data.weather.sys.country}</div>
-          </div>
-          <UVDisplay
-            uv={data.uv.result.uv}
-            uv_max={data.uv.result.uv_max}
-            safe_exposure_time={data.uv.result.safe_exposure_time}
-          />
-        </div>
-      ) : (
-        <div className='p-4 rounded-xl shadow-md bg-gray-200 text-gray-500 text-center'>
-          Detecting location or enter a city above
-        </div>
-      )}
-    </main>
+        {/*weather card below header left  */}
+        <section className='border-2 md:col-start-1 bg-blue-200 rounded-2xl p-6 flex justify-center items-center'>
+          {loading ? (
+            <p className='text-center text-gray-500'>Loading weather...</p>
+          ) : error ? (
+            <p className='text-center text-red-600'>{error}</p>
+          ) : data ? (
+            <WeatherDisplay
+              city={data.city}
+              country={data.weather.sys.country}
+              temperature={data.weather.main.temp}
+              description={data.weather.weather[0].description}
+            />
+          ) : null}
+        </section>
+
+        {/* uv right  */}
+        <section className='md:col-start-2 md:row-start-1 md:row-end-3 md:col-end-4 rounded-2xl'>
+          {loading ? (
+            <p className='text-center text-gray-500'>Loading uv data...</p>
+          ) : error ? (
+            <p className='text-center text-gray-500'>{error}</p>
+          ) : data ? (
+            <UVDisplay
+              uv={data.uv.result.uv}
+              uv_max={data.uv.result.uv_max}
+              safe_exposure_time={data.uv.result.safe_exposure_time}
+            />
+          ) : null}
+        </section>
+      </main>
+    </>
   );
 }
