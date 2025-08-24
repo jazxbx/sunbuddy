@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## SunBuddy 😎☀️
 
-## Getting Started
+SunBuddy is a modern web app that helps users stay safe while enjoying the sun. It displays the current UV index, local weather, and safe sun exposure times based on your location or a city search.
 
-First, run the development server:
+I made this because I've been burnt by the rays multiple times and wanted an easy way to track uv exposure. This helps users enjoy sunny or cloudy days without risking sun damage.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Detects your current location and fetches local UV & weather data.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Search for any city worldwide.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Weather Display: temperature, conditions
 
-## Learn More
+UV Display: current UV index, maximum UV, and recommended safe exposure time.
 
-To learn more about Next.js, take a look at the following resources:
+Bento-style responsive layout: works on mobile and large screens.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Loading & error states for a smooth user experience.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Mobile-friendly and responsive Tailwind CSS design.
 
-## Deploy on Vercel
+![web](image-1.png)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## How its made
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### Tech Stack
+
+Next.js, TypeScript, Tailwind CSS, OpenWeatherMap for weather and geolocation
+
+## What I Learned
+
+State management - I learned the importance of separating state to prevent unexpected behaviors in react. I initially used a single state variable for both search and current city so I had some incorrent values.
+
+Type safety with TypeScript- it helps catch bugs early and ensures that data from the api is handled safely.
