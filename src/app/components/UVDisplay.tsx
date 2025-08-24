@@ -44,7 +44,7 @@ export default function UVDisplay({ uv, uv_max, safe_exposure_time }: UVData) {
     };
   }
 
-  const { label, text, bg, message } = getUVLevel(1);
+  const { label, text, bg, message } = getUVLevel(uv);
 
   return (
     <div
