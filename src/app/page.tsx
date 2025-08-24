@@ -9,7 +9,7 @@ import { WeatherDisplay } from './components/WeatherDisplay';
 
 export default function HomePage() {
   const [city, setCity] = useState('');
-  const [data, setData] = useState<APIResponse | null>();
+  const [data, setData] = useState<APIResponse | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
