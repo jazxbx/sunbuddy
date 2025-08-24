@@ -24,12 +24,12 @@ export function SkinTypeSelector({
   };
 
   return (
-    <div className='space-y-2 w-full max-w-md my-2'>
+    <div className='flex flex-col gap-3 items-center'>
       <label className='font-semibold'>Select your skin type:</label>
       <select
         value={skinType}
         onChange={(e) => setSkinType(Number(e.target.value) as SkinType)}
-        className='border p-2 rounded w-full bg-white'
+        className='border p-2 rounded w-full bg-white mt-2 text-black'
       >
         <option value={1}>Skin Type 1 (Very fair, always burns)</option>
         <option value={2}>Skin Type 2 (Fair, usually burns)</option>
@@ -39,8 +39,9 @@ export function SkinTypeSelector({
         <option value={6}>Skin Type 6 (Dark brown, never burns)</option>
       </select>
 
-      <p>
-        Safe exposure time: {safeTime ? convertMinstoHrsMins(safeTime) : 'N/A'}
+      <p className='my-2 text-xl font-semibold'>Safe Exposure:</p>
+      <p className='font-bold text-3xl'>
+        {safeTime ? convertMinstoHrsMins(safeTime) : 'N/A'}
       </p>
     </div>
   );

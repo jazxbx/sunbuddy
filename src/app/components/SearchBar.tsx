@@ -14,7 +14,7 @@ export default function SearchBar({
   onSubmit,
 }: SearchProps) {
   return (
-    <div className='p-6'>
+    <div className='py-3 md:py-5'>
       <form className='flex gap-2 w-full max-w-md' onSubmit={onSubmit}>
         <input
           type='text'
@@ -25,7 +25,7 @@ export default function SearchBar({
         />
         <button
           type='submit'
-          className='px-4 py-2 bg-blue-400 text-white rounded-xl hover:bg-blue-600'
+          className='border-2 border-blue-800 pointer px-4 py-2 bg-blue-400 text-white rounded-xl hover:bg-blue-600'
         >
           Search
         </button>

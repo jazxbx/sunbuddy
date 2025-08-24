@@ -26,7 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${ibm.variable}`}>{children}</body>
+      <body className={`${ibm.variable} bg-bg p-3 md:py-5 md:px-6 lg:px-11`}>
+        {children}
+      </body>
     </html>
   );
 }
