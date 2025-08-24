@@ -40,6 +40,6 @@ export interface SafeExposureTime {
 
 export interface APIResponse {
   city: string;
-  uv: { result: UVData };
+  uv: { result: UVData; error: string };
   weather: WeatherData;
 }
