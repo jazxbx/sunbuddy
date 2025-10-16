@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import SearchBar from './components/SearchBar';
-import UVDisplay from './components/UVDisplay';
 
 import { APIResponse } from './types';
-import { WeatherDisplay } from './components/WeatherDisplay';
 
 export default function HomePage() {
   const [city, setCity] = useState('');
@@ -16,87 +14,70 @@ export default function HomePage() {
 
   // get users location
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(async (position) => {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
       try {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+        const { latitude, longitude } = pos.coords;
 
-        //open weather to get city
+        // Get city name from coordinates
         const res = await fetch(
-          `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}`
+          `/api/reverse-geocode?lat=${latitude}&lon=${longitude}`
         );
-        const data = await res.json();
+        const locationData = await res.json();
 
-        // console.log({ data });
-
-        const cityName = data[0].name;
+        const cityName = locationData.city || 'Unknown';
         setCity(cityName);
+
+        // Immediately fetch weather for that city
+        const weatherRes = await fetch(
+          `/api/weather?city=${encodeURIComponent(cityName)}`
+        );
+        if (!weatherRes.ok) throw new Error('Failed to fetch weather');
+        const data = await weatherRes.json();
+        console.log(data);
+
+        //Store weather in state
+        setData(data);
+        setError(null);
       } catch (err) {
         console.error(err);
-        setError('Failed to get city from coordinates');
+        setError('Failed to get location or weather');
       }
     });
   }, []);
 
-  useEffect(() => {
-    if (!city) return;
-
-    async function fetchUV() {
-      setLoading(true);
-      setError(null);
-      setData(null);
-
-      try {
-        const res = await fetch(`/api/uv?city=${city}`);
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || 'Failed to fetch UV data');
-        }
-        const uvData = await res.json();
-        setData(uvData);
-
-        if (uvData.uv.error) {
-          setError(uvData.uv.error);
-        }
-        // console.log({ uvData });
-      } catch (e) {
-        if (e instanceof Error) setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchUV();
-  }, [city]);
-
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchInput) return;
+    if (!searchInput.trim()) return;
 
     setLoading(true);
     setError(null);
     setData(null);
-    setCity(searchInput);
-    setSearchInput('');
 
+    // use search input directly
     try {
-      const res = await fetch(`/api/uv?city=${city}`);
+      //  Use searchInput directly, not city
+      const res = await fetch(
+        `/api/weather?city=${encodeURIComponent(searchInput)}`
+      );
+
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.error || 'Failed to fetch UV data');
+        throw new Error(error.error || 'Failed to fetch weather data');
       }
+
       const data = await res.json();
+      console.log(data);
       setData(data);
+      setCity(data.city || searchInput);
     } catch (e) {
       if (e instanceof Error) {
         setError(e.message);
       }
     } finally {
+      setSearchInput('');
       setLoading(false);
     }
   };
-
-  // console.log(error || (data && data.uv.error));
 
   return (
     <>
@@ -114,39 +95,6 @@ export default function HomePage() {
           <p className='font-medium text-center'>
             your sunny sidekick for safe sun time
           </p>
-        </section>
-
-        {/*weather card below header left  */}
-        <section className='border-2 md:col-start-1 bg-blue-200 rounded-2xl p-6 flex justify-center items-center'>
-          {loading ? (
-            <p className='text-center text-gray-500'>Loading weather...</p>
-          ) : error ? (
-            <p className='text-center text-red-600'>{error}</p>
-          ) : data ? (
-            <WeatherDisplay
-              city={data.city}
-              country={data.weather.sys.country}
-              temperature={data.weather.main.temp}
-              description={data.weather.weather[0].description}
-            />
-          ) : null}
-        </section>
-
-        {/* uv right  */}
-        <section className='md:col-start-2 md:row-start-1 md:row-end-3 md:col-end-4 rounded-2xl'>
-          {loading ? (
-            <p className='text-center text-gray-500'>Loading uv data...</p>
-          ) : error ? (
-            <p className='text-center text-gray-500'>{error}</p>
-          ) : (
-            data && (
-              <UVDisplay
-                uv={data.uv.result.uv}
-                uv_max={data.uv.result.uv_max}
-                safe_exposure_time={data.uv.result.safe_exposure_time}
-              />
-            )
-          )}
         </section>
       </main>
     </>
