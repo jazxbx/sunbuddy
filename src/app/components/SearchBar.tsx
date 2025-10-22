@@ -1,26 +1,37 @@
 'use client';
 
+import { useState } from 'react';
+
+// create state here for input then a handler to
+
 type SearchProps = {
-  placeholder: string;
-  searchInput: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSubmit: (input: string) => void;
 };
 
-export default function SearchBar({
-  placeholder,
-  searchInput,
-  onChange,
-  onSubmit,
-}: SearchProps) {
+export default function SearchBar({ onSubmit }: SearchProps) {
+  const [input, setInput] = useState('');
+
+  const handleInput = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const value = input.trim();
+    if (!value) {
+      console.log('no input/ not valid');
+      return;
+    }
+    onSubmit(value);
+    setInput('');
+  };
+
+  console.log('searchComponent:', input);
+
   return (
     <div className='py-3 md:py-5'>
-      <form className='flex gap-2 w-full max-w-md' onSubmit={onSubmit}>
+      <form className='flex gap-2 w-full max-w-md' onSubmit={handleInput}>
         <input
           type='text'
-          value={searchInput}
-          onChange={onChange}
-          placeholder={placeholder}
+          value={input}
+          onChange={(e) => setInput((e.target as HTMLInputElement).value)}
+          placeholder='Search City...'
           className='flex-1 px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400'
         />
         <button
