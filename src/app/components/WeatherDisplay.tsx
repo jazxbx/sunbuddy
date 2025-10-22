@@ -1,26 +1,25 @@
-interface WeatherDisplayProps {
-  city: string;
-  country: string;
-  temperature: number;
-  description: string;
-}
+import Card from './Card';
 
-export function WeatherDisplay({
-  city,
-  country,
-  temperature,
-  description,
-}: WeatherDisplayProps) {
+export function WeatherDisplay({ city }) {
   return (
-    <div className=' flex items-center gap-3 p-4 rounded-2xl'>
-      <div>
-        <div className='flex gap-3 text-lg font-semibold'>
-          <h2>{city}</h2>
-          <h2>{country}</h2>
+    <Card>
+      <div className='flex justify-between '>
+        <div>
+          {' '}
+          <h2 className='text-base md:text-2xl'>{city}</h2>
+          <h4 className='text-xs'>9:00 pm</h4>
+          <h4 className='text-xs'>partly cloudy</h4>
         </div>
-        <p className='text-2xl font-bold'>{Math.round(temperature)}°C</p>
-        <p className='text-sm capitalize text-gray-600'>{description}</p>
+        <div>image here</div>
       </div>
-    </div>
+      <div className='flex mt-10 justify-center'>
+        <p className='text-6xl'>18</p>
+        <div className='flex items-start justify-start'>
+          <button className='px-1 cursor-pointer'>ºC</button>
+          <p>|</p>
+          <button className='px-1 cursor-pointer'>ºF</button>
+        </div>
+      </div>
+    </Card>
   );
 }
