@@ -43,13 +43,22 @@ export async function GET(req: Request) {
 
     const weatherData = await weatherRes.json();
 
-    // Combine geocode + weather data
+    // Combine geocode data + weather data
     return NextResponse.json({
       city: name,
       region: admin1,
-      country,
-      coordinates: { latitude, longitude },
-      weather: weatherData,
+      country: country,
+      coordinates: { longitude, latitude },
+      uv: {
+        days: weatherData.daily.time,
+        uv_index_max: weatherData.daily.uv_index_max,
+        uv_index_clear_sky_max: weatherData.daily.uv_index_clear_sky_max,
+      },
+      temperature: {
+        hourly_time: weatherData.hourly.time.slice(0, 24),
+        hourly_temp: weatherData.hourly.temperature_2m.slice(0, 24),
+        hourly_code: weatherData.hourly.weather_code.slice(0, 24),
+      },
     });
   } catch (error) {
     if (error instanceof ReferenceError)
