@@ -1,71 +1,109 @@
 'use client';
 
-import Header from './components/Header';
-import { APIResponse } from './types';
-import { WeatherDisplay } from './components/WeatherDisplay';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { fetchCoords, fetchUV, fetchWeather } from './lib/api/api';
+import {
+  CoordsSchema,
+  FormattedWeather,
+  UVApiResponse,
+  WeatherSchema,
+} from './types';
+import { formatWeatherData } from './utils/formatWeather';
+import { match } from './utils/timeMatcher';
+import { WeatherDisplay } from './components/WeatherDisplay';
 
 export default function HomePage() {
-  const [city, setCity] = useState('');
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
+    null
+  );
 
-  console.log({ city });
+  const [formattedWeatherData, setFormattedWeatherData] = useState<
+    FormattedWeather[] | null
+  >(null);
+  const [currentWeather, setCurrentWeather] = useState<FormattedWeather | null>(
+    null
+  );
 
-  // get users location
+  //get user coords
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      try {
-        const { latitude, longitude } = pos.coords;
+    if (!navigator?.geolocation) {
+      console.warn('Geolocation not supported');
+      return;
+    }
 
-        // Get city name from coordinates
-        const res = await fetch(
-          `/api/reverse-geocode?lat=${latitude}&lon=${longitude}`
-        );
-        const locationData = await res.json();
-
-        const cityName = locationData.city || 'Unknown';
-
-        setCity(cityName);
-      } catch (err) {
-        console.error(err);
-      }
-    });
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoords({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+        });
+      },
+      (err) => console.error('Geolocation error:', err)
+    );
   }, []);
 
-  async function fetchWeather() {
-    // use current city state
-    const weatherRes = await fetch(
-      `/api/weather?city=${encodeURIComponent(city)}`
-    );
-    if (!weatherRes.ok) {
-      throw new Error('Failed to fetch weather');
-    }
-    console.log('Running fetchWeather for:', city);
-    return await weatherRes.json();
-  }
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['weather', city],
-    queryFn: fetchWeather,
-    enabled: !!city, // prevent useQuery from firing before city state is set
+  //fetch coords
+  const {
+    data: locationData,
+    isLoading: locationLoading,
+    isError: locationError,
+  } = useQuery<CoordsSchema>({
+    queryKey: ['reverseGeocode', coords],
+    queryFn: () => fetchCoords(coords!.lat, coords!.lon),
+    enabled: !!coords, // only run when coords exist
   });
 
-  //handleSearch
+  const city = locationData?.city || '';
 
-  const handleSearch = (city: string) => {
-    setCity(city);
-  };
+  //weather data
+  const {
+    data: weatherData,
+    isLoading: weatherLoading,
+    isError: weatherError,
+  } = useQuery<WeatherSchema>({
+    queryKey: ['weather', city],
+    queryFn: () => fetchWeather(city),
+    enabled: !!city, // run only once city exists
+  });
 
-  console.log(data);
+  //uv data
+
+  const {
+    data: uvData,
+    isLoading: uvLoading,
+    isError: uvError,
+  } = useQuery<UVApiResponse>({
+    queryKey: ['uv', coords],
+    queryFn: () => fetchUV(coords!.lat, coords!.lon),
+    enabled: !!coords,
+  });
+
+  console.log({ locationData, weatherData, uvData });
+
+  //cleaned up data
+
+  useEffect(() => {
+    if (!weatherData) return;
+    setFormattedWeatherData(formatWeatherData(weatherData));
+  }, [weatherData]);
+
+  useEffect(() => {
+    if (!formattedWeatherData) return;
+    setCurrentWeather(match(formattedWeatherData));
+  }, [formattedWeatherData]);
+
+  console.log({ currentWeather });
 
   return (
-    <>
-      {/* bento grid container */}
-      <main className='h-screen w-full justify-center items-center '>
-        {/* header- top left */}
-        <Header onSubmit={handleSearch} />
-        <div className='flex flex-col gap-2'></div>
-      </main>
-    </>
+    <main className='h-screen w-full flex flex-col justify-center items-center'>
+      {locationLoading && <p>Detecting your location...</p>}
+      {locationError && <p>Unable to detect location.</p>}
+      {weatherLoading && <p>Fetching weather data...</p>}
+      {weatherError && <p>Failed to load weather.</p>}
+      <p>{locationData?.city}</p>
+      <p>{locationData?.country}</p>
+      <WeatherDisplay city={city} currentWeather={currentWeather} />
+    </main>
   );
 }

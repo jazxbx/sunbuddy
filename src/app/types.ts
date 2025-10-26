@@ -1,11 +1,9 @@
-export interface APIResponse {
+export interface CoordsSchema {
   city: string;
-  region: string;
   country: string;
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
+}
+
+export interface WeatherSchema {
   uv: {
     days: string[];
     uv_index_max: number[];
@@ -17,3 +15,36 @@ export interface APIResponse {
     hourly_code: number[];
   };
 }
+
+export interface FormattedWeather {
+  hour24: string;
+  hour12: string;
+  temp: number;
+  code: {
+    label: string;
+    icon: string;
+  };
+}
+
+export interface UVPoint {
+  time: string;
+  uvi: number;
+}
+
+export interface UVApiResponse {
+  ok: boolean;
+  latitude: number;
+  longitude: number;
+  now: UVPoint;
+  history?: UVPoint[];
+  forecast?: UVPoint[];
+}
+
+export interface UVDayData {
+  date: string;
+  points: UVPoint[];
+  peakUV: number;
+  peakTime: string;
+}
+
+export type UVCategory = 'Low' | 'Moderate' | 'High' | 'Very High' | 'Extreme';
