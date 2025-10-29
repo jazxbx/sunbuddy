@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCoords, fetchUV, fetchWeather } from './lib/api/api';
+import {
+  fetchCoords,
+  fetchCoordsByCity,
+  fetchUV,
+  fetchWeather,
+} from './lib/api/api';
 import {
   CoordsSchema,
   FormattedWeather,
@@ -12,11 +17,15 @@ import {
 import { formatWeatherData } from './utils/formatWeather';
 import { match } from './utils/timeMatcher';
 import { WeatherDisplay } from './components/WeatherDisplay';
+import UVDisplay from './components/UVDisplay';
+import SearchBar from './components/SearchBar';
+import SkinTypeSelector from './components/SkinTypeSelector';
 
 export default function HomePage() {
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
     null
   );
+  const [searchCity, setSearchCity] = useState<string | null>(null);
 
   const [formattedWeatherData, setFormattedWeatherData] = useState<
     FormattedWeather[] | null
@@ -24,8 +33,13 @@ export default function HomePage() {
   const [currentWeather, setCurrentWeather] = useState<FormattedWeather | null>(
     null
   );
+  // handle manual city search
+  const handleSearch = (cityName: string) => {
+    setSearchCity(cityName);
+    setCoords(null); //disable geoloc when searching
+  };
 
-  //get user coords
+  // get user's coordinates on mount
   useEffect(() => {
     if (!navigator?.geolocation) {
       console.warn('Geolocation not supported');
@@ -43,7 +57,7 @@ export default function HomePage() {
     );
   }, []);
 
-  //fetch coords
+  // reverse geocode (lat/lon -> city)
   const {
     data: locationData,
     isLoading: locationLoading,
@@ -51,38 +65,41 @@ export default function HomePage() {
   } = useQuery<CoordsSchema>({
     queryKey: ['reverseGeocode', coords],
     queryFn: () => fetchCoords(coords!.lat, coords!.lon),
-    enabled: !!coords, // only run when coords exist
+    enabled: !!coords,
   });
 
-  const city = locationData?.city || '';
+  const detectedCity = locationData?.city || '';
+  const activeCity = searchCity || detectedCity;
 
-  //weather data
+  // weather data
   const {
     data: weatherData,
     isLoading: weatherLoading,
     isError: weatherError,
   } = useQuery<WeatherSchema>({
-    queryKey: ['weather', city],
-    queryFn: () => fetchWeather(city),
-    enabled: !!city, // run only once city exists
+    queryKey: ['weather', activeCity],
+    queryFn: () => fetchWeather(activeCity),
+    enabled: !!activeCity,
   });
 
-  //uv data
-
+  // uv data
   const {
     data: uvData,
     isLoading: uvLoading,
     isError: uvError,
   } = useQuery<UVApiResponse>({
-    queryKey: ['uv', coords],
-    queryFn: () => fetchUV(coords!.lat, coords!.lon),
-    enabled: !!coords,
+    queryKey: ['uv', searchCity || coords],
+    queryFn: async () => {
+      if (searchCity) {
+        const { lat, lon } = await fetchCoordsByCity(searchCity);
+        return fetchUV(lat, lon);
+      }
+      return fetchUV(coords!.lat, coords!.lon);
+    },
+    enabled: !!(coords || searchCity),
   });
 
-  console.log({ locationData, weatherData, uvData });
-
-  //cleaned up data
-
+  // format + match weather data
   useEffect(() => {
     if (!weatherData) return;
     setFormattedWeatherData(formatWeatherData(weatherData));
@@ -93,17 +110,28 @@ export default function HomePage() {
     setCurrentWeather(match(formattedWeatherData));
   }, [formattedWeatherData]);
 
-  console.log({ currentWeather });
+  console.log({ weatherData, currentWeather, locationData, uvData });
+  console.log('curr uv:', uvData?.now.uvi);
 
   return (
-    <main className='h-screen w-full flex flex-col justify-center items-center'>
+    <main className='h-screen w-full flex flex-col gap-5'>
+      <SearchBar onSubmit={handleSearch} />
+
       {locationLoading && <p>Detecting your location...</p>}
       {locationError && <p>Unable to detect location.</p>}
       {weatherLoading && <p>Fetching weather data...</p>}
       {weatherError && <p>Failed to load weather.</p>}
-      <p>{locationData?.city}</p>
-      <p>{locationData?.country}</p>
-      <WeatherDisplay city={city} currentWeather={currentWeather} />
+      {uvLoading && <p>Fetching UV data...</p>}
+      {uvError && <p>Failed to load UV index.</p>}
+
+      {weatherData && (
+        <WeatherDisplay
+          weatherData={weatherData}
+          currentWeather={currentWeather}
+        />
+      )}
+      {uvData && <UVDisplay uvData={uvData} />}
+      {uvData && <SkinTypeSelector currentUVI={uvData.now.uvi} />}
     </main>
   );
 }
