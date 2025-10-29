@@ -22,8 +22,6 @@ export default function SearchBar({ onSubmit }: SearchProps) {
     setInput('');
   };
 
-  console.log('searchComponent:', input);
-
   return (
     <div className='py-3 md:py-5'>
       <form className='flex gap-2 w-full max-w-md' onSubmit={handleInput}>
