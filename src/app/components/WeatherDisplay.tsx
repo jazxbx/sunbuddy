@@ -1,32 +1,35 @@
-import { FormattedWeather } from '../types';
+import { FormattedWeather, WeatherSchema } from '../types';
 import Card from './Card';
 
 type WeatherDisplayProps = {
-  city: string;
+  weatherData?: WeatherSchema;
   currentWeather: FormattedWeather | null;
 };
 
-export function WeatherDisplay({ city, currentWeather }: WeatherDisplayProps) {
-  if (!currentWeather) return <p>Loading...</p>;
+// TODO: Add C to F converter
+export function WeatherDisplay({
+  weatherData,
+  currentWeather,
+}: WeatherDisplayProps) {
+  if (!weatherData || !currentWeather) return <p>Loading...</p>;
+  const { city, country } = weatherData;
+
   return (
     <Card>
-      <div className='flex justify-between '>
+      <div className='flex justify-between'>
         <div>
-          {' '}
-          <h2 className='text-base md:text-2xl'>{city}</h2>
-          <h4 className='text-xs'>{currentWeather.hour24}</h4>
-          <p>
-            {currentWeather.code.icon} {currentWeather.code.label}
-          </p>
+          <h2 className='text-xl font-semibold'>{city}</h2>
+          <h6 className='text-gray-600 text-xs mb-2'>{country}</h6>
+          <p>{currentWeather.code.label}</p>
         </div>
-        <div>image here</div>
+        <div className='text-3xl'> {currentWeather.code.icon} </div>
       </div>
       <div className='flex mt-10 justify-center'>
         <p className='text-6xl'>{currentWeather.temp}</p>
         <div className='flex items-start justify-start'>
           <button className='px-1 cursor-pointer'>ºC</button>
-          <p>|</p>
-          <button className='px-1 cursor-pointer'>ºF</button>
+          {/* <p>|</p>
+          <button className='px-1 cursor-pointer'>ºF</button> */}
         </div>
       </div>
     </Card>

@@ -1,66 +1,57 @@
 'use client';
-import { useState } from 'react';
 
-import { UVData, SkinType } from '../types';
-import { SkinTypeSelector } from './SkinTypeSelector';
+import { UVApiResponse } from '../types';
+import { getMaxUVI } from '../utils/getMaxUVI';
+import { getTodayUVData } from '../utils/getTodayForecast';
+import { getUVColor } from '../utils/uvColor';
+import uvProtectionAdvice from '../utils/uvProtectionAdvice';
+import Card from './Card';
 
-export default function UVDisplay({ uv, uv_max, safe_exposure_time }: UVData) {
-  const [skinType, setSkinType] = useState<SkinType>(3);
+type UVDisplayProps = {
+  uvData: UVApiResponse;
+};
+export default function UVDisplay({ uvData }: UVDisplayProps) {
+  const todayForecast = getTodayUVData(uvData);
+  const maxUVI = getMaxUVI(todayForecast);
+  const currentUVI = uvData.now.uvi;
+  // const currentUVI = 7;
+  const { level, advice } = uvProtectionAdvice(currentUVI);
+  const color = getUVColor(currentUVI);
+  const percentage = Math.min((currentUVI / 11) * 100, 100);
 
-  function getUVLevel(uv: number) {
-    if (uv <= 2)
-      return {
-        label: 'Low',
-        text: 'text-green-700',
-        bg: 'bg-lime-100',
-        message: 'Minimal risk. Sunglasses optional.',
-      };
-    if (uv <= 5)
-      return {
-        label: 'Moderate',
-        text: 'text-yellow-500',
-        bg: 'bg-amber-100',
-        message: 'Some risk. Use SPF 15+ if outdoors.',
-      };
-    if (uv <= 7)
-      return {
-        label: 'High',
-        text: 'text-orange-600',
-        bg: 'bg-orange-200',
-        message: 'High risk. Wear sunscreen, hat, and sunglasses.',
-      };
-    if (uv <= 10)
-      return {
-        label: 'Very High',
-        text: 'text-red-50',
-        bg: 'bg-red-700',
-        message: 'Very high risk. Limit midday sun, use strong SPF.',
-      };
-    return {
-      label: 'Extreme',
-      text: 'text-indigo-200',
-      bg: 'bg-violet-800',
-      message: 'Extreme risk. Avoid sun, cover up, and use SPF 50+.',
-    };
-  }
-
-  const { label, text, bg, message } = getUVLevel(uv);
+  console.log({ todayForecast });
 
   return (
-    <div
-      className={`flex flex-col items-center py-4 px-3 md:py-6 gap-3 rounded-xl border-2 border-black ${bg} ${text}`}
-    >
-      <div className='text-2xl font-bold'>UV INDEX</div>
-      <h1 className={`text-7xl font-extrabold ${text}`}>{uv.toFixed(1)}</h1>
-      <h2 className='text-2xl font-bold'>{label}</h2>
-      <h3 className='text-lg'>{message}</h3>
-      <p className='text-2xl font-bold'>Max UV Today: {uv_max.toFixed(1)}</p>
+    <div>
+      <Card>
+        <h2 className='text-xl font-semibold mb-2'>UV Index</h2>
 
-      <SkinTypeSelector
-        skinType={skinType}
-        setSkinType={setSkinType}
-        safeExposureTime={safe_exposure_time}
-      />
+        <div className='flex items-center justify-between'>
+          <p className='text-3xl font-bold' style={{ color }}>
+            {currentUVI.toFixed(1)}
+          </p>
+          <p className='text-lg font-medium'>{level}</p>
+        </div>
+
+        {/* UV slider */}
+        <div className='relative w-full mt-4'>
+          {/* Gradient bar */}
+          <div className='w-full h-4 rounded-full bg-[linear-gradient(to_right,#22c55e_0%,#facc15_25%,#fb923c_50%,#ef4444_75%,#9333ea_100%)]'></div>
+
+          {/* Dot indicator */}
+          <div
+            className='absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-out'
+            style={{
+              left: `${percentage}%`,
+            }}
+          >
+            <div className='w-5 h-5 rounded-full border-2 border-white shadow-md'></div>
+          </div>
+        </div>
+
+        <p className='text-sm text-gray-700 mt-3'>{advice}</p>
+        <p className='mt-2 text-gray-500'>Max Today: {maxUVI?.uvi ?? '—'}</p>
+      </Card>
     </div>
   );
 }
