@@ -1,5 +1,5 @@
 import { WeatherSchema, FormattedWeather } from '../types';
-import { parseWeather } from './parseWeather';
+import { parseWeatherCode } from './parseWeatherCode';
 
 export function formatWeatherData(
   weatherData: WeatherSchema,
@@ -20,6 +20,6 @@ export function formatWeatherData(
         minute: '2-digit',
       }),
       temp: Math.round(weatherData.temperature.hourly_temp[index]),
-      code: parseWeather(weatherData.temperature.hourly_code[index]),
+      code: parseWeatherCode(weatherData.temperature.hourly_code[index]),
     }));
 }
