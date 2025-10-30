@@ -23,8 +23,8 @@ export default function SafetyTips() {
 
   return (
     <Card>
-      <h2>Stay Safe in the Sun</h2>
-      <p className='text-sm'>{tips[index]}</p>
+      <h2 className='text-xl font-semibold'>Stay Safe in the Sun</h2>
+      <p className='text-sm md:text-base mt-5'>{tips[index]}</p>
     </Card>
   );
 }

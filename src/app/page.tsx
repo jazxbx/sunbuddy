@@ -18,9 +18,7 @@ import { formatWeatherData } from './utils/formatWeather';
 import { match } from './utils/timeMatcher';
 import { WeatherDisplay } from './components/WeatherDisplay';
 import UVDisplay from './components/UVDisplay';
-import SearchBar from './components/SearchBar';
 import SkinTypeSelector from './components/SkinTypeSelector';
-import Card from './components/Card';
 import Header from './components/Header';
 import SafetyTips from './components/SafetyTips';
 
@@ -113,19 +111,13 @@ export default function HomePage() {
     setCurrentWeather(match(formattedWeatherData));
   }, [formattedWeatherData]);
 
-  console.log({ weatherData, currentWeather, locationData, uvData });
-  console.log('curr uv:', uvData?.now.uvi);
+  // console.log({ weatherData, currentWeather, locationData, uvData });
+  // console.log('curr uv:', uvData?.now.uvi);
 
   return (
     <>
       <Header onSubmit={handleSearch} />
-      <main className=' flex flex-col gap-2 md:gap-3 pt-3 md:grid md:grid-cols-[1fr_1fr_1.5fr] md:grid-rows-[1fr_1fr]'>
-        {/* <div className='flex items-center justify-between'>
-        <h1 className='text-3xl md:hidden'>😎</h1>
-        <h1 className='text-3xl hidden md:inline'>sunbuddy</h1>
-        <SearchBar onSubmit={handleSearch} />
-      </div> */}
-
+      <main className='flex flex-col gap-2 md:gap-3 pt-3 md:grid md:grid-cols-[1fr_1fr_1.5fr] md:grid-rows-[1fr_1fr]'>
         {locationLoading && <p>Detecting your location...</p>}
         {locationError && <p>Unable to detect location.</p>}
         {weatherLoading && <p>Fetching weather data...</p>}
