@@ -64,13 +64,17 @@ export default function SkinTypeSelector({
 
   return (
     <Card>
-      <h2 className='text-xl font-semibold mb-2'>Sun Exposure</h2>
+      <h2 className='text-xl font-semibold mb-2'>Soak Up the Sun, Safely</h2>
+      <p className='text-gray-700'>
+        Based on your skin type, here’s how long you can safely stay in the sun
+        before burning.
+      </p>
       {/* <p className='text-gray-600 text-sm mb-3'>
         Current UV Index: <strong>{currentUVI.toFixed(1)}</strong>
       </p> */}
 
       {/* Skin type buttons with hover info */}
-      <div className='grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4'>
+      <div className='grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4 mt-4'>
         {(Object.keys(SKIN_INFO) as SkinType[]).map((type) => {
           const info = SKIN_INFO[type];
           return (
@@ -99,20 +103,17 @@ export default function SkinTypeSelector({
 
       {/* Safe exposure time */}
       <div className='text-center'>
-        {currentUVI > 0 ? (
-          <>
-            <p className='text-lg text-gray-800'>Safe exposure time:</p>
-            <p className='text-3xl font-bold mt-1'>
-              {formatMinstoTime(safeTime)}
-            </p>
-            <p className='text-xs text-gray-500 mt-2'>
-              Estimated time before sunburn. Actual protection varies with SPF,
-              altitude, and reflective surfaces such as water or snow.
-            </p>
-          </>
-        ) : (
-          <p className='text-sm text-gray-500 italic'>Waiting for UV data...</p>
-        )}
+        <>
+          <p className='text-lg text-gray-800'>Safe exposure time:</p>
+          <p className='text-3xl font-bold mt-1'>
+            {formatMinstoTime(safeTime)}
+          </p>
+          <p className='text-xs text-gray-500 mt-2'>
+            Approximate time before burn (without SPF). Wearing SPF 30 + is
+            always recommended. Conditions like snow, water, and high altitude
+            can increase UV exposure and reduce safe time.
+          </p>
+        </>
       </div>
     </Card>
   );

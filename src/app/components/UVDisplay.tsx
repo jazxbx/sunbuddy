@@ -19,19 +19,21 @@ export default function UVDisplay({ uvData }: UVDisplayProps) {
   const color = getUVColor(currentUVI);
   const percentage = Math.min((currentUVI / 11) * 100, 100);
 
-  console.log({ todayForecast });
+  // console.log({ todayForecast });
 
   return (
-    <div>
-      <Card>
-        <h2 className='text-xl font-semibold mb-2'>UV Index</h2>
-
-        <div className='flex items-center justify-between'>
-          <p className='text-3xl font-bold' style={{ color }}>
-            {currentUVI.toFixed(1)}
-          </p>
-          <p className='text-lg font-medium'>{level}</p>
-        </div>
+    <Card>
+      <div className='items-center flex flex-col gap-2 text-center md:mt-4 md:gap-4'>
+        <h2 className='text-xl md:text-2xl font-semibold mb-2'>UV Index</h2>
+        <p className='text-gray-500 text-xs md:text-sm'>
+          Sun damage is caused by ultraviolet (UV) radiation, not temperature -
+          meaning you can still damage your skin on cloudy days!
+        </p>
+        {/* UV num display */}
+        <p className='text-4xl font-bold md:text-6xl md:mt-3' style={{ color }}>
+          {currentUVI.toFixed(1)}
+        </p>
+        <p className='text-lg font-medium'>{level}</p>
 
         {/* UV slider */}
         <div className='relative w-full mt-4'>
@@ -49,9 +51,9 @@ export default function UVDisplay({ uvData }: UVDisplayProps) {
           </div>
         </div>
 
-        <p className='text-sm text-gray-700 mt-3'>{advice}</p>
-        <p className='mt-2 text-gray-500'>Max Today: {maxUVI?.uvi ?? '—'}</p>
-      </Card>
-    </div>
+        <p className='text-sm md:text-base text-gray-700 mt-3'>{advice}</p>
+        <p className='text-xl mt-4'>Max Today: {maxUVI?.uvi ?? '—'}</p>
+      </div>
+    </Card>
   );
 }
