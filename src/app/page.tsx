@@ -20,6 +20,9 @@ import { WeatherDisplay } from './components/WeatherDisplay';
 import UVDisplay from './components/UVDisplay';
 import SearchBar from './components/SearchBar';
 import SkinTypeSelector from './components/SkinTypeSelector';
+import Card from './components/Card';
+import Header from './components/Header';
+import SafetyTips from './components/SafetyTips';
 
 export default function HomePage() {
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
@@ -114,24 +117,41 @@ export default function HomePage() {
   console.log('curr uv:', uvData?.now.uvi);
 
   return (
-    <main className='h-screen w-full flex flex-col gap-5'>
-      <SearchBar onSubmit={handleSearch} />
+    <>
+      <Header onSubmit={handleSearch} />
+      <main className=' flex flex-col gap-2 md:gap-3 pt-3 md:grid md:grid-cols-[1fr_1fr_1.5fr] md:grid-rows-[1fr_1fr]'>
+        {/* <div className='flex items-center justify-between'>
+        <h1 className='text-3xl md:hidden'>😎</h1>
+        <h1 className='text-3xl hidden md:inline'>sunbuddy</h1>
+        <SearchBar onSubmit={handleSearch} />
+      </div> */}
 
-      {locationLoading && <p>Detecting your location...</p>}
-      {locationError && <p>Unable to detect location.</p>}
-      {weatherLoading && <p>Fetching weather data...</p>}
-      {weatherError && <p>Failed to load weather.</p>}
-      {uvLoading && <p>Fetching UV data...</p>}
-      {uvError && <p>Failed to load UV index.</p>}
+        {locationLoading && <p>Detecting your location...</p>}
+        {locationError && <p>Unable to detect location.</p>}
+        {weatherLoading && <p>Fetching weather data...</p>}
+        {weatherError && <p>Failed to load weather.</p>}
+        {uvLoading && <p>Fetching UV data...</p>}
+        {uvError && <p>Failed to load UV index.</p>}
+        <div>
+          {weatherData && (
+            <WeatherDisplay
+              weatherData={weatherData}
+              currentWeather={currentWeather}
+            />
+          )}
+        </div>
 
-      {weatherData && (
-        <WeatherDisplay
-          weatherData={weatherData}
-          currentWeather={currentWeather}
-        />
-      )}
-      {uvData && <UVDisplay uvData={uvData} />}
-      {uvData && <SkinTypeSelector currentUVI={uvData.now.uvi} />}
-    </main>
+        <div>
+          <SafetyTips />
+        </div>
+
+        <div className='row-span-2'>
+          {uvData && <UVDisplay uvData={uvData} />}
+        </div>
+        <div className='col-span-2'>
+          {uvData && <SkinTypeSelector currentUVI={uvData.now.uvi} />}
+        </div>
+      </main>
+    </>
   );
 }

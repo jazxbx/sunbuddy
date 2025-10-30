@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`${lato.variable} ${playfair_display.variable} bg-bg p-3 md:py-5 md:px-6 lg:px-11 bg-blue-50`}
+        className={`${lato.variable} ${playfair_display.variable} bg-bg p-3 md:py-5 md:px-10 lg:px-48 bg-blue-50`}
       >
         <Providers>{children}</Providers>
       </body>
