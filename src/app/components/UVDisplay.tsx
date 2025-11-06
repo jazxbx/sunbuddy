@@ -6,6 +6,7 @@ import { getTodayUVData } from '../utils/getTodayForecast';
 import { getUVColor } from '../utils/uvColor';
 import uvProtectionAdvice from '../utils/uvProtectionAdvice';
 import Card from './Card';
+import UVChart from './UVChart';
 
 type UVDisplayProps = {
   uvData: UVApiResponse;
@@ -19,7 +20,7 @@ export default function UVDisplay({ uvData }: UVDisplayProps) {
   const color = getUVColor(currentUVI);
   const percentage = Math.min((currentUVI / 11) * 100, 100);
 
-  // console.log({ todayForecast });
+  console.log({ todayForecast });
 
   return (
     <Card>
@@ -54,6 +55,7 @@ export default function UVDisplay({ uvData }: UVDisplayProps) {
         <p className='text-sm md:text-base text-gray-700 mt-3'>{advice}</p>
         <p className='text-xl mt-4'>Max Today: {maxUVI?.uvi ?? '—'}</p>
       </div>
+      <UVChart todayForecast={todayForecast} />
     </Card>
   );
 }

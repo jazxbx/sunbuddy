@@ -21,6 +21,7 @@ import UVDisplay from './components/UVDisplay';
 import SkinTypeSelector from './components/SkinTypeSelector';
 import Header from './components/Header';
 import SafetyTips from './components/SafetyTips';
+import UVChart from './components/UVChart';
 
 export default function HomePage() {
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
@@ -112,7 +113,7 @@ export default function HomePage() {
   }, [formattedWeatherData]);
 
   // console.log({ weatherData, currentWeather, locationData, uvData });
-  // console.log('curr uv:', uvData?.now.uvi);
+  // console.log({ uvData });
 
   return (
     <>
